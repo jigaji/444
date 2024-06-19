@@ -32,19 +32,27 @@ const MainData = ({
 }) => {
   const [showShareIcons, setShowShareIcons] = useState(false);
   const optionsMenuRef = useRef(null);
-  const [files, setfiles] = useState([]);
+  const [files, setFiles] = useState([]);
   const userId = useUserData()?.user_id;
   const inputRef = useRef(null);
 
+
   const fetchfiles = async () => {
       const file_res = await apiInstance.get(`files/${userId}/`);
-      setfiles(file_res.data);
+      setFiles(file_res.data);
       console.log(file_res.data[0]);
   };
 
   useEffect(() => {
       fetchfiles();
   }, []);
+
+
+  const dowloadFile = async(file) => {
+    const result = await apiInstance.get(`file${file.uid}`)
+    console.log(result)
+    console.log(file)
+  }
 
   const handleButtonClick = () => {
     inputRef.current?.click();  // simulates clicking on file input element and opens dialog box
@@ -108,11 +116,10 @@ const MainData = ({
       {files.length > 0 ? (
         files?.map((file) => (
           <DataListRow key={file.id}>
-            <div>
-             
+            <div>  
               {/* File details and icon */}
-              <a href={file.share_link}>
-                {/* <FileIcons type={file.data.contentType} /> */}
+              <a href={file.file} target="_blank">            
+
                 <span title={file.filename}>{file.filename}</span>
               </a>
             </div>
@@ -135,15 +142,12 @@ const MainData = ({
                 <OptionsMenu ref={optionsMenuRef}>
                   {/* Various options available for each file */}
                   <span>
-                    <a
-                      href={file.share_link}
-                      download={file.name}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <span
+                     onClick={() => dowloadFile(file.uid)}                      
                     >
                       <DownloadIcon />
                       {" Download"}
-                    </a>
+                    </span>
                   </span>
                   <span
                     onClick={() => {

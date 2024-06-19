@@ -16,6 +16,7 @@ import MainData from "./pages/MainData";
 import Layout from "./pages/Layout";
 import ErrorPage from "./pages/ErrorPage";
 import { ToastContainer } from "react-toastify";
+import SharePage from "./pages/Share";
 
 function App(){
 const router = createBrowserRouter([
@@ -54,8 +55,8 @@ const router = createBrowserRouter([
         }
       ],
     },
-    {path: "/side",
-    element:<Sidebar/>
+    {path: "/:code",
+    element:<SharePage/>
     }
   ]);
 

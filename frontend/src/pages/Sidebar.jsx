@@ -51,7 +51,7 @@ const Sidebar = () => {
       Swal.fire({
           icon: "success",
           title: "file created successfully.",
-      }).then(function(){location.reload();})
+      }).then(function(){location.reload()});
       setUploading(false);
       setFile(null);
       setOpen(false);

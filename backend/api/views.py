@@ -2,6 +2,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.response import Response
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
+import os
 import logging
 from django.http import HttpResponse
 from dotenv import load_dotenv
@@ -39,7 +40,6 @@ class FileList(generics.ListAPIView):
     def get_queryset(self):
         user_id = self.kwargs['user_id']
         user = api_models.User.objects.get(id=user_id)
-
         
         return api_models.File.objects.filter(by_user=user).order_by("-id") 
         
@@ -53,21 +53,7 @@ class FileUploadAPIView(generics.CreateAPIView):
         user_id = request.data.get('by_user')
         filename = request.data.get('filename')
         file = request.data.get('file')
-        # description = request.data.get('description')
-        # size = request.data.get('size')
-        # share_link = request.data.get('share_link')
-        # upload_datetime = request.data.get('upload_datetime')
-        
-
-      
-        print(request.data)
-        # print(share_link)
-        # print(filename)
-        # print(file)
-        # print(description)
-        # print(size)
-        # print(share_link)
-        # print(upload_datetime)
+    
 
         user = api_models.User.objects.get(id=user_id)
         print(user)
@@ -76,15 +62,12 @@ class FileUploadAPIView(generics.CreateAPIView):
             by_user=user,
             filename=filename,
             file=file,
-            # description=description,
-            # size=size,
-            # share_link=share_link,
-            # upload_datetime=upload_datetime
             
         )
         print(file.by_user)
         print(file.filename)
         print(file.share_link)
+        print('file', file.file)
 
         return Response({"message": "File has been uploaded successfully"}, status=status.HTTP_201_CREATED)
     
@@ -102,6 +85,8 @@ class FileView(generics.RetrieveAPIView):
     queryset = api_models.File.objects.all()
     serializer_class = api_serializer.FileSerializer
     permission_classes = [AllowAny]
+    lookup_field = 'uid'
+    
 
 
     def get(self, request, *args, **kwargs):
@@ -134,12 +119,14 @@ class FileEditAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 
 
-def redirect_to_file(request, hash):
+def redirect_to_file(request, uid):
         try:
-            share_link = f"{'http://localhost:5173/s/{hash}'}"
-            file_obj = api_models.File.objects.get(share_link=share_link)
-            response = HttpResponse(file_obj.file)
+            file_obj = api_models.File.objects.all().get(uid=uid)
+            response = HttpResponse (file_obj.file)
+            print('Response', response)
+            print(file_obj.file)
             response['Content-Disposition'] = f'attachment; filename="{file_obj.filename}"'
+            print(response['Content-Disposition'] )
             logger.info(f"File '{file_obj.filename}' was provided for download.")
             return response
         except api_models.File.DoesNotExist:

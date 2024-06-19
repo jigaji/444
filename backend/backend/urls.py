@@ -14,12 +14,11 @@ urlpatterns = [
     path('api/user/profile/<user_id>/', api_views.ProfileView.as_view(), name='user_profile'),
     path('api/files/<user_id>/', api_views.FileList.as_view()),
     path('api/file/upload/', api_views.FileUploadAPIView.as_view()),
-    path('api/file/share/<int:pk>', api_views.FileView.as_view()),
+    # path('api/file<uuid:uid>', api_views.FileView.as_view()),
     path('api/file/delete/<int:pk>', api_views.FileDeleteAPIView.as_view()),
     path('api/files/detail/<user_id>/<file_id>/', api_views.FileEditAPIView.as_view()),
     
-
-    path('s/<str:hash>/', api_views.redirect_to_file, name='redirect_to_file'),
+    path('api/file<uuid:uid>/', api_views.redirect_to_file, name='redirect_to_file'),
 
 ]
 

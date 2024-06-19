@@ -11,7 +11,7 @@ class ProfileAdmin(admin.ModelAdmin):
     list_display = ['thumbnail', 'user', 'full_name']
 
 class FileAdmin(admin.ModelAdmin):
-    list_display = ('id', 'filename', 'upload_datetime', 'by_user', 'get_original_file','share_link')
+    list_display = ('uid', 'filename', 'upload_datetime', 'by_user', 'get_original_file','share_link')
     readonly_fields = ('share_link', 'size', )
     
     def get_original_file(self, obj):

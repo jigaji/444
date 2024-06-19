@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.dispatch import receiver
 from django.conf import settings
 import os
+import uuid 
 import math
 import logging
 from dotenv import load_dotenv
@@ -93,11 +94,11 @@ def convert_size(size_bytes):
 
 
 class File(models.Model):
-    id = models.AutoField(primary_key=True)
+    uid = models.UUIDField(editable=True, default=uuid.uuid4, unique=True)
     file = models.FileField(null=True, verbose_name='file in storage')
     filename = models.CharField(max_length=255, null=True, default='')
     size = models.CharField(max_length=255, null=True)
-    share_link = models.CharField(max_length=100, null=True, default='')
+    share_link = models.CharField(max_length=255, null=True)
     upload_datetime = models.DateTimeField(default=timezone.now)
     by_user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
 
@@ -105,6 +106,7 @@ class File(models.Model):
 
         userfolder = self.by_user.username
         hash_link = hash(self.upload_datetime)
+        print('hash', hash_link)
 
         if self.id:
             logger.info(f"Update file with id='{self.id}' and filename='{self.filename}' was initialized by {self.by_user}.")
@@ -122,7 +124,7 @@ class File(models.Model):
                 self.filename = self.file.name
                 self.file.name = os.path.join(userfolder, f'{hash_link}{file_ext}')
 
-            self.share_link = os.path.join('http://localhost:5173', f'file-{self.file.name}')
+            self.share_link = os.path.join(os.getenv('REACT_APP_API_URL'), f'file{self.uid}')
             self.size = convert_size(self.file.size)
           
 
